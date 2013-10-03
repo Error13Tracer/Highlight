@@ -1,9 +1,12 @@
 //////////////////////////
 //Highlight SDK         //
-//Version: 1.0.1        //
-//Date   : 23.09.2013   //
+//Version: 1.0.2        //
+//Date   : 04.10.2013   //
 //Author : Error13Tracer//
 //////////////////////////
+
+#ifndef HighlightH
+#define HighlightH
 
 const LPCSTR HighlightDll = "Highlight.dll";
 
@@ -79,14 +82,16 @@ PGetThemeId        GetThemeId;
 PGetThemesCount    GetThemesCount;
 PGetThemeName      GetThemeName;
 
-HMODULE hHighlight;
+HMODULE hHighlight = NULL;
 
-bool InitHighlight(){
-  hHighlight = LoadLibraryA(HighlightDll);
-  if (hHighlight != 0) {
+static bool InitHighlight(){
+  if (hHighlight == NULL){
+    hHighlight = LoadLibraryA(HighlightDll);
+  }
+  if (hHighlight != NULL) {
     CreateHighlight   = (PCreateHighlight)  GetProcAddress(hHighlight, /*0x01*/"CreateHighlight@8");
     HighlightDrawItem = (PHighlightDrawItem)GetProcAddress(hHighlight, /*0x02*/"HighlightDrawItem@12");
-    HighlightRedraw   = (PHighlightRedraw)  GetProcAddress(hHighlight, /*0x03*/"HighlightRedraw@4");  
+    HighlightRedraw   = (PHighlightRedraw)  GetProcAddress(hHighlight, /*0x03*/"HighlightRedraw@4");
     ChangeLanguage    = (PChangeLanguage)   GetProcAddress(hHighlight, /*0x04*/"ChangeLanguage@8");
     ChangeTheme       = (PChangeTheme)      GetProcAddress(hHighlight, /*0x05*/"ChangeTheme@8");
     ChangeGlobalTheme = (PChangeGlobalTheme)GetProcAddress(hHighlight, /*0x06*/"ChangeGlobalTheme@8");
@@ -102,8 +107,10 @@ bool InitHighlight(){
     return false;
 }
 
-void FreeHighlight(){
+static void FreeHighlight(){
   if (hHighlight != 0) {
-    FreeLibrary(hHighlight);
+  FreeLibrary(hHighlight);
   }
 }
+
+#endif

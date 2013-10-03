@@ -89,22 +89,22 @@ begin
         end;
         '$', '0'..'9':
         begin
-          if ItemText[i] = '$' then //HEX числа
+          //if ItemText[i] = '$' then //HEX числа
           begin
             OutStr := ItemText[i];
             inc(i);
-            while ItemText[i] in ['0'..'9', 'A'..'F', 'a'..'f'] do
+            while ItemText[i] in ['0'..'9', 'A'..'F', 'a'..'f', '.'] do
             begin
               OutStr := OutStr + ItemText[i];
               inc(i);
             end;
-          end
-          else //десятичные числа, включая с плавающей точкой
+          end;
+          {else //десятичные числа, включая с плавающей точкой
             while ItemText[i] in ['0'..'9', '.'] do
             begin
               OutStr := OutStr + ItemText[i];
               inc(i);
-            end;
+            end;  }
           Font        := cHighlightTheme.Numbers.Font;
           Brush.Color := cHighlightTheme.Numbers.BgColor;
         end;
