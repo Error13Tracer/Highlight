@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Classes, Controls, Forms,
-  Highlight, Menus, StdCtrls, ComCtrls;
+  Highlight, Menus, StdCtrls, ComCtrls, ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -24,6 +24,8 @@ type
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
+    Panel1: TPanel;
+    Button1: TButton;
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure ListBox2DrawItem(Control: TWinControl; Index: Integer;
@@ -35,6 +37,7 @@ type
     procedure Redraw1Click(Sender: TObject);
     procedure Redraw2Click(Sender: TObject);
     procedure Redraw3Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     procedure OnClickM1(Sender: TObject);
     procedure OnClickM2(Sender: TObject);
@@ -193,6 +196,13 @@ end;
 procedure TForm1.Redraw3Click(Sender: TObject);
 begin
   HighlightRedraw(HexLbId);
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  ModalResult : Integer;
+begin
+  ModalResult := SettingsShowModal(Handle);
 end;
 
 end.

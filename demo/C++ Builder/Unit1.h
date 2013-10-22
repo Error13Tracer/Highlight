@@ -24,6 +24,8 @@ __published:	// IDE-managed Components
 	TPopupMenu *PopupMenu1;
 	TPopupMenu *PopupMenu2;
 	TPopupMenu *PopupMenu3;
+	TPanel *Panel1;
+	TButton *Button1;
 	void __fastcall ListBox1DrawItem(TWinControl *Control, int Index, TRect &Rect, TOwnerDrawState State);
 	void __fastcall ListBox2DrawItem(TWinControl *Control, int Index, TRect &Rect, TOwnerDrawState State);
 	void __fastcall ListBox3DrawItem(TWinControl *Control, int Index, TRect &Rect, TOwnerDrawState State);
@@ -32,6 +34,7 @@ __published:	// IDE-managed Components
 	void __fastcall Redraw3Click(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
+	void __fastcall Button1Click(TObject *Sender);
 private:	// User declarations
 	void __fastcall LoadFromStream(TListBox *ListBox, char *Lang);
 	void __fastcall OnClickM1(TObject *Sender);

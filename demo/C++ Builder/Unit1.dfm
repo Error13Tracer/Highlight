@@ -19,68 +19,77 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 684
-    Height = 524
+    Height = 483
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitTop = 41
-    ExplicitWidth = 1072
-    ExplicitHeight = 483
+    ExplicitHeight = 524
     object TabSheet1: TTabSheet
       Caption = 'Delphi'
-      ExplicitWidth = 1064
-      ExplicitHeight = 455
+      ExplicitHeight = 496
       object ListBox1: TListBox
         Left = 0
         Top = 0
         Width = 676
-        Height = 496
+        Height = 455
         Align = alClient
         ItemHeight = 13
         PopupMenu = PopupMenu1
         TabOrder = 0
         OnDrawItem = ListBox1DrawItem
-        ExplicitWidth = 1064
-        ExplicitHeight = 455
+        ExplicitHeight = 496
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'Asm'
       ImageIndex = 1
-      ExplicitWidth = 1064
-      ExplicitHeight = 455
       object ListBox2: TListBox
         Left = 0
         Top = 0
         Width = 676
-        Height = 496
+        Height = 455
         Align = alClient
         ItemHeight = 13
         PopupMenu = PopupMenu2
         TabOrder = 0
         OnDrawItem = ListBox2DrawItem
-        ExplicitWidth = 1064
-        ExplicitHeight = 455
       end
     end
     object TabSheet3: TTabSheet
       Caption = 'Hex'
       ImageIndex = 2
-      ExplicitWidth = 1064
-      ExplicitHeight = 455
       object ListBox3: TListBox
         Left = 0
         Top = 0
         Width = 676
-        Height = 496
+        Height = 455
         Align = alClient
         ItemHeight = 13
         PopupMenu = PopupMenu3
         TabOrder = 0
         OnDrawItem = ListBox3DrawItem
-        ExplicitWidth = 1064
-        ExplicitHeight = 455
       end
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 483
+    Width = 684
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 1
+    ExplicitLeft = 192
+    ExplicitTop = 224
+    ExplicitWidth = 185
+    object Button1: TButton
+      Left = 16
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = 'Settings'
+      TabOrder = 0
+      OnClick = Button1Click
     end
   end
   object PopupMenu1: TPopupMenu

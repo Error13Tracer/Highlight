@@ -21,27 +21,35 @@ type
     function  GetText        (Index: LongInt)             : string;
   private
     cNoHighlight   : BOOL;
+    cPreviewMode   : BOOL;
     cID            : DWORD;
     cThemeId       : DWORD;
     cControlHandle : HWND;
     cHighlightLang : TThemeLang;
-    cHighlightTheme: TTheme;
     cCanvas        : TCanvas;
     procedure SetControlHandle           (const Value: HWND);
     procedure SetControlHighlightLanguage(const Value: DWORD);
     procedure SetControlHighlightTheme   (const Value: DWORD);
     function  GetControlHighlightLanguage: DWORD;
     function  GetControlHighlightTheme   : DWORD;
+    procedure SetPreviewMode(const Value: BOOL);
   public
+    cHighlightTheme: TTheme;
     constructor Create;
     destructor  Destroy; override;
     procedure   OnDrawItem(Index: LongInt; Rect: TRect);
     procedure   Update;
+    procedure   Redraw;
+    procedure   ChangeCustomTheme(CustomTheme: TTheme);
+    procedure   ChangeCustomThemeEx(CustomTheme: TTheme);
   published
     property ID: DWORD                read cID                         write cID;
     property ControlHandle: HWND      read cControlHandle              write SetControlHandle;
     property HighlightLanguage: DWORD read GetControlHighlightLanguage write SetControlHighlightLanguage;
     property HighlightTheme: DWORD    read GetControlHighlightTheme    write SetControlHighlightTheme;
+    property PreviewMode: BOOL        read cPreviewMode                write SetPreviewMode;
+    //property CustomTheme: TTheme      read cHighlightTheme             write ChangeCustomTheme;
+    //property CustomFont : TFont      read cHighlightTheme.Default.Font         write cHighlightTheme.Default.Font;//ChangeCustomTheme;
   end;
 
 implementation
@@ -459,7 +467,7 @@ end;
 function TControlHighlight.DrawDefault(Index: Integer; Rect: TRect): BOOL;
 begin
   with cCanvas do begin
-    if bNoHighlight or cNoHighlight then
+    if (bNoHighlight or cNoHighlight) and (not cPreviewMode) then
     begin
       Font.Name   := 'Fixedsys';
       Font.Style  := [];
@@ -560,6 +568,7 @@ begin
     HEX.Chars.Font     := TFont.Create;
   end;
   cHighlightLang := tlUnknown;
+  cPreviewMode   := False;
   cControlHandle := 0;
   cNoHighlight   := bNoHighlight;
   cThemeId       := GetThemeId(cHighlightLang);
@@ -603,7 +612,30 @@ end;
 procedure TControlHighlight.Update;
 begin
   cNoHighlight := not LoadTheme(cHighlightLang, cThemeId, True, @cHighlightTheme);
+  Redraw;
+end;
+
+procedure TControlHighlight.ChangeCustomTheme(CustomTheme: TTheme);
+begin
+  cHighlightTheme := CustomTheme;
+  Update;
+end;
+
+procedure TControlHighlight.ChangeCustomThemeEx(CustomTheme: TTheme);
+begin
+  cHighlightTheme := CustomTheme;
+  Redraw;
+end;
+
+procedure TControlHighlight.Redraw;
+begin
   InvalidateRect(cControlHandle, nil, True);
+end;
+
+procedure TControlHighlight.SetPreviewMode(const Value: BOOL);
+begin
+  cPreviewMode := Value;
+  Redraw;
 end;
 
 end.

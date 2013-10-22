@@ -5,7 +5,7 @@ interface
 implementation
 
 uses
-  Windows, uHighlight, uHighlightTools;
+  Windows, uHighlight, uHighlightTools, uHighlightSettings;
 
 var
   aHighlight : array of TControlHighlight;
@@ -184,6 +184,17 @@ begin
     lstrcpy(Buffer, @szBuf[1]);
 end;
 
+//Возвращает ModalResult
+function SettingsShowModal(WindowHandle: HWND): Integer; stdcall; export;
+begin
+  fHighlightSettings := TfHighlightSettings.CreateParented(WindowHandle);
+  try
+    Result := fHighlightSettings.ShowModal;
+  finally
+    fHighlightSettings.Free;
+  end;
+end;
+
 exports
   CreateHighlight   index $01 name 'CreateHighlight@8',
   HighlightDrawItem index $02 name 'HighlightDrawItem@12',
@@ -194,8 +205,8 @@ exports
   DeleteHighlight   index $07 name 'DeleteHighlight@4',
   GetThemeId        index $08 name 'GetThemeId@4',
   GetThemesCount    index $09 name 'GetThemesCount@4',
-  GetThemeName      index $0A name 'GetThemeName@16';
-
+  GetThemeName      index $0A name 'GetThemeName@16',
+  SettingsShowModal index $0B name 'SettingsShowModal@4';
 var
   i : integer;
 initialization

@@ -1,7 +1,7 @@
 //////////////////////////
 //Highlight SDK         //
-//Version: 1.0.2        //
-//Date   : 04.10.2013   //
+//Version: 1.1.0        //
+//Date   : 22.10.2013   //
 //Author : Error13Tracer//
 //////////////////////////
 
@@ -71,6 +71,11 @@ typedef  DWORD (__stdcall * PGetThemeName)     (DWORD, DWORD, LPCSTR, DWORD);
 //Размер буфера
 //Возврат - длина имени темы; Буфер - имя темы
 
+//Диалог настроек
+typedef  int   (__stdcall * PSettingsShowModal)(HWND);
+//Хендл окна, поверх которого отображать
+//Возврат - ModalResult
+
 PCreateHighlight   CreateHighlight;
 PHighlightDrawItem HighlightDrawItem;
 PHighlightRedraw   HighlightRedraw;
@@ -81,6 +86,7 @@ PDeleteHighlight   DeleteHighlight;
 PGetThemeId        GetThemeId;
 PGetThemesCount    GetThemesCount;
 PGetThemeName      GetThemeName;
+PSettingsShowModal SettingsShowModal;
 
 HMODULE hHighlight = NULL;
 
@@ -99,10 +105,11 @@ static bool InitHighlight(){
     GetThemeId        = (PGetThemeId)       GetProcAddress(hHighlight, /*0x08*/"GetThemeId@4");
     GetThemesCount    = (PGetThemesCount)   GetProcAddress(hHighlight, /*0x09*/"GetThemesCount@4");
     GetThemeName      = (PGetThemeName)     GetProcAddress(hHighlight, /*0x0A*/"GetThemeName@16");
-    return ((CreateHighlight != NULL)&(ChangeLanguage  != NULL)&(ChangeTheme       != NULL)&
-            (GetThemesCount  != NULL)&(DeleteHighlight != NULL)&(HighlightDrawItem != NULL)&
-            (HighlightRedraw != NULL)&(GetThemeName    != NULL)&(ChangeGlobalTheme != NULL)&
-            (GetThemeId      != NULL));
+    SettingsShowModal = (PSettingsShowModal)GetProcAddress(hHighlight, /*0x0B*/"SettingsShowModal@4");
+    return ((CreateHighlight != NULL)&(ChangeLanguage    != NULL)&(ChangeTheme       != NULL)&
+            (GetThemesCount  != NULL)&(DeleteHighlight   != NULL)&(HighlightDrawItem != NULL)&
+            (HighlightRedraw != NULL)&(GetThemeName      != NULL)&(ChangeGlobalTheme != NULL)&
+            (GetThemeId      != NULL)&(SettingsShowModal != NULL));
   }else
     return false;
 }

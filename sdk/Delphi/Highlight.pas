@@ -1,8 +1,8 @@
 unit Highlight;
 //////////////////////////
 //Highlight SDK         //
-//Version: 1.0.1        //
-//Date   : 23.09.2013   //
+//Version: 1.1.0        //
+//Date   : 22.10.2013   //
 //Author : Error13Tracer//
 //////////////////////////
 interface
@@ -82,6 +82,11 @@ type
   //Размер буфера
   //Возврат - длина имени темы; Буфер - имя темы
   
+  //Диалог настроек
+  TSettingsShowModal = function  (WindowHandle: HWND): Integer; stdcall;
+  //Хендл окна, поверх которого отображать
+  //Возврат - ModalResult
+  
 var
   CreateHighlight   : TCreateHighlight   = nil;
   HighlightDrawItem : THighlightDrawItem = nil;
@@ -93,6 +98,7 @@ var
   GetThemeId        : TGetThemeId        = nil;
   GetThemesCount    : TGetThemesCount    = nil;
   GetThemeName      : TGetThemeName      = nil;
+  SettingsShowModal : TSettingsShowModal = nil;
   
   function  InitHighlight(): bool;
   procedure FreeHighlight();
@@ -117,10 +123,11 @@ begin
     GetThemeId        := GetProcAddress(hHighlight, {08}'GetThemeId@4');
     GetThemesCount    := GetProcAddress(hHighlight, {09}'GetThemesCount@4');
     GetThemeName      := GetProcAddress(hHighlight, {0A}'GetThemeName@16');
-    Result := ((@CreateHighlight <> nil) and (@ChangeLanguage  <> nil) and (@ChangeTheme       <> nil) and 
-               (@GetThemesCount  <> nil) and (@DeleteHighlight <> nil) and (@HighlightDrawItem <> nil) and 
-               (@HighlightRedraw <> nil) and (@GetThemeName    <> nil) and (@ChangeGlobalTheme <> nil) and 
-               (@GetThemeId      <> nil));
+    SettingsShowModal := GetProcAddress(hHighlight, {0B}'SettingsShowModal@4');
+    Result := ((@CreateHighlight <> nil) and (@ChangeLanguage    <> nil) and (@ChangeTheme       <> nil) and 
+               (@GetThemesCount  <> nil) and (@DeleteHighlight   <> nil) and (@HighlightDrawItem <> nil) and 
+               (@HighlightRedraw <> nil) and (@GetThemeName      <> nil) and (@ChangeGlobalTheme <> nil) and 
+               (@GetThemeId      <> nil) and (@SettingsShowModal <> nil));
   end else
     Result := False;
 end;
