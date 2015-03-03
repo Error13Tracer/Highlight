@@ -2,8 +2,8 @@ library Highlight;
 
 //////////////////////////
 //Highlight for IDR     //
-//Version: 1.1.0        //
-//Date   : 22.10.2013   //
+//Version: 1.2.0        //
+//Date   : 03.03.2015   //
 //Author : Error13Tracer//
 //////////////////////////
 

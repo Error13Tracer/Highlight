@@ -29,21 +29,21 @@ TMenuItem *m3[10];
 void __fastcall TForm1::ListBox1DrawItem(TWinControl *Control, int Index, TRect &Rect,
           TOwnerDrawState State)
 {
-	HighlightDrawItem(DelphiLbId, Index, Rect);
+	HighlightDrawItem(DelphiLbId, Index, Rect, (rand() % 2 == 0 ? true : false));
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::ListBox2DrawItem(TWinControl *Control, int Index, TRect &Rect,
           TOwnerDrawState State)
 {
-	HighlightDrawItem(AsmLbId, Index, Rect);
+	HighlightDrawItem(AsmLbId, Index, Rect, (rand() % 2 == 0 ? true : false));
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::ListBox3DrawItem(TWinControl *Control, int Index, TRect &Rect,
           TOwnerDrawState State)
 {
-	HighlightDrawItem(HexLbId, Index, Rect);
+	HighlightDrawItem(HexLbId, Index, Rect, (rand() % 2 == 0 ? true : false));
 }
 //---------------------------------------------------------------------------
 
@@ -80,6 +80,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
       	MessageBoxA(NULL, "Highlight.dll not found", "Error", MB_ICONERROR);
 		ExitProcess(NULL);
 	};
+	randomize;
 	ListBox1->Style = lbOwnerDrawFixed;
 	ListBox2->Style = lbOwnerDrawFixed;
 	ListBox3->Style = lbOwnerDrawFixed;
@@ -126,20 +127,21 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 
 void __fastcall TForm1::FormDestroy(TObject *Sender)
 {
+
 	int i = 0;
 	if (DelphiThemesCount > 0) {
 		for (i = 0; i < DelphiThemesCount; i++){
-			delete m1;
+			FreeAndNil(m1);
 		}
 	}
 	if (AsmThemesCount > 0) {
 		for (i = 0; i < AsmThemesCount; i++){
-			delete m2;
+			FreeAndNil(m2);
 		}
 	}
 	if (HexThemesCount > 0) {
 		for (i = 0; i < HexThemesCount; i++){
-			delete m3;
+			FreeAndNil(m3);
 		}
 	}
 	FreeHighlight();

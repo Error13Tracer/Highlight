@@ -14,10 +14,10 @@ const
 type
   TControlHighlight = class
   protected
-    procedure DelphiHighlight(Index: LongInt; Rect: TRect);
-    procedure AsmHighlight   (Index: LongInt; Rect: TRect);
-    procedure HexHighlight   (Index: LongInt; Rect: TRect);
-    function  DrawDefault    (Index: LongInt; Rect: TRect): BOOL;
+    procedure DelphiHighlight(Index: LongInt; Rect: TRect; Lighten: BOOL);
+    procedure AsmHighlight   (Index: LongInt; Rect: TRect; Lighten: BOOL);
+    procedure HexHighlight   (Index: LongInt; Rect: TRect; Lighten: BOOL);
+    function  DrawDefault    (Index: LongInt; Rect: TRect; Lighten: BOOL): BOOL;
     function  GetText        (Index: LongInt)             : string;
   private
     cNoHighlight   : BOOL;
@@ -37,7 +37,7 @@ type
     cHighlightTheme: TTheme;
     constructor Create;
     destructor  Destroy; override;
-    procedure   OnDrawItem(Index: LongInt; Rect: TRect);
+    procedure   OnDrawItem(Index: LongInt; Rect: TRect; Lighten: BOOL);
     procedure   Update;
     procedure   Redraw;
     procedure   ChangeCustomTheme(CustomTheme: TTheme);
@@ -54,11 +54,14 @@ type
 
 implementation
 
+const
+  clLighten = $BBBBBB;
+
 //-------------------------------------------------------------------------------------------
 //PROTECTED
 
 //Подсветка Delphi
-procedure TControlHighlight.DelphiHighlight(Index: LongInt; Rect: TRect);
+procedure TControlHighlight.DelphiHighlight(Index: LongInt; Rect: TRect; Lighten: BOOL);
 label
   _ToDraw;
 const
@@ -72,7 +75,7 @@ var
   OutStr  : string;
   BufStr  : string;
 begin
-  if DrawDefault(Index, Rect) then
+  if DrawDefault(Index, Rect, Lighten) then
     Exit;
   ItemText := TrimRight(GetText(Index));
   slen     := Length(ItemText);
@@ -81,6 +84,16 @@ begin
     FillRect(Rect);
     i := 1;
     OutPos := Rect.Left + INDENT_VALUE;
+    if Lighten then
+    begin
+      if (slen <> 0) then
+      begin
+        Brush.Color := cHighlightTheme.Lighten.BgColor;
+        Font        := cHighlightTheme.Lighten.Font;
+        TextOut(OutPos + INDENT_VALUE * 2, Rect.Top, ItemText);
+      end;
+      Exit;
+    end;
     if (slen <> 0) then
     repeat
       OutStr := '';
@@ -245,7 +258,7 @@ begin
 end;
 
 //Подсветка Assembler
-procedure TControlHighlight.AsmHighlight(Index: LongInt; Rect: TRect);
+procedure TControlHighlight.AsmHighlight(Index: LongInt; Rect: TRect; Lighten: BOOL);
 label
   _ToDraw;
 const
@@ -259,7 +272,7 @@ var
   OutStr  : string;
   BufStr  : string;
 begin
-  if DrawDefault(Index, Rect) then
+  if DrawDefault(Index, Rect, Lighten) then
     Exit;
   ItemText := TrimRight(GetText(Index));
   slen     := Length(ItemText);
@@ -268,6 +281,16 @@ begin
     FillRect(Rect);
     i := 1;
     OutPos := Rect.Left + INDENT_VALUE;
+    if Lighten then
+    begin
+      if (slen <> 0) then
+      begin
+        Brush.Color := cHighlightTheme.Lighten.BgColor;
+        Font        := cHighlightTheme.Lighten.Font;
+        TextOut(OutPos + INDENT_VALUE * 2, Rect.Top, ItemText);
+      end;
+      Exit;
+    end;
     if (slen <> 0) then
     repeat
       OutStr := '';
@@ -398,7 +421,7 @@ begin
 end;
 
 //Подсветка HEX
-procedure TControlHighlight.HexHighlight(Index: Integer; Rect: TRect);
+procedure TControlHighlight.HexHighlight(Index: Integer; Rect: TRect; Lighten: BOOL);
 const
   INDENT_VALUE = 1;
 var
@@ -408,7 +431,7 @@ var
   ItemText: string;
   OutStr  : string;
 begin
-  if DrawDefault(Index, Rect) then
+  if DrawDefault(Index, Rect, Lighten) then
     Exit;
   ItemText := TrimRight(GetText(Index));
   slen     := Length(ItemText);
@@ -417,6 +440,16 @@ begin
     FillRect(Rect);
     i := 1;
     OutPos := Rect.Left + INDENT_VALUE;
+    if Lighten then
+    begin
+      if (slen <> 0) then
+      begin
+        Brush.Color := cHighlightTheme.Lighten.BgColor;
+        Font        := cHighlightTheme.Lighten.Font;
+        TextOut(OutPos + INDENT_VALUE, Rect.Top, ItemText);
+      end;
+      Exit;
+    end;
     if (slen <> 0) then
     begin
       OutStr := Copy(ItemText, i, 8);
@@ -464,7 +497,7 @@ begin
 end;
 
 //Отрисовка без подсветки
-function TControlHighlight.DrawDefault(Index: Integer; Rect: TRect): BOOL;
+function TControlHighlight.DrawDefault(Index: Integer; Rect: TRect; Lighten: BOOL): BOOL;
 begin
   with cCanvas do begin
     if (bNoHighlight or cNoHighlight) and (not cPreviewMode) then
@@ -473,7 +506,10 @@ begin
       Font.Style  := [];
       Font.Size   := 8;
       Font.Color  := clWindowText;
-      Pen.Color   := clWindowText;
+      if (not Lighten) then
+        Pen.Color := clWindowText
+      else
+        Pen.Color := clLighten;
       Pen.Style   := psSolid;
       Brush.Color := clWindow;
       Brush.Style := bsSolid;
@@ -559,6 +595,7 @@ begin
   cCanvas := TCanvas.Create;
   with cHighlightTheme do begin
     Default.Font    := TFont.Create;
+    Lighten.Font    := TFont.Create;
     Comments.Font   := TFont.Create;
     Numbers.Font    := TFont.Create;
     Strings.Font    := TFont.Create;
@@ -580,6 +617,7 @@ var
 begin
   with cHighlightTheme do begin
     Default.Font.Free;
+    Lighten.Font.Free;
     Comments.Font.Free;
     Numbers.Font.Free;
     for i := Low(KeyWords) to High(KeyWords) do
@@ -595,16 +633,16 @@ begin
   inherited;
 end;
 
-procedure TControlHighlight.OnDrawItem(Index: Integer; Rect: TRect);
+procedure TControlHighlight.OnDrawItem(Index: Integer; Rect: TRect; Lighten: BOOL);
 begin
   if cControlHandle <> 0 then
     case cHighlightLang of
-      tlAsm    : AsmHighlight(Index, Rect);
-      tlHex    : HexHighlight(Index, Rect);
-      tlDelphi : DelphiHighlight(Index, Rect);
+      tlAsm    : AsmHighlight(Index, Rect, Lighten);
+      tlHex    : HexHighlight(Index, Rect, Lighten);
+      tlDelphi : DelphiHighlight(Index, Rect, Lighten);
       else begin
         cNoHighlight := True;
-        DrawDefault(Index, Rect);
+        DrawDefault(Index, Rect, Lighten);
       end;
     end;
 end;

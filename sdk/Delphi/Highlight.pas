@@ -1,8 +1,8 @@
 unit Highlight;
 //////////////////////////
 //Highlight SDK         //
-//Version: 1.1.0        //
-//Date   : 22.10.2013   //
+//Version: 1.2.0        //
+//Date   : 03.03.2015   //
 //Author : Error13Tracer//
 //////////////////////////
 interface
@@ -30,10 +30,12 @@ type
   //Отрисовка в событии OnDrawItem
   THighlightDrawItem = procedure (ID   : DWORD;
                                   Index: LongInt;
-                                  Rect : TRect); stdcall;
+                                  Rect : TRect;
+                                  Lighten: BOOL); stdcall;
   //ID контрола
   //Index
   //Rect
+  //Lighten (true - осветление, false - рисовать согласно теме)
 
   //Перерисовка контрола
   THighlightRedraw   = procedure (ID: DWORD); stdcall;
@@ -114,7 +116,7 @@ begin
   if (hHighlight <> 0) then
   begin
     CreateHighlight   := GetProcAddress(hHighlight, {01}'CreateHighlight@8');
-    HighlightDrawItem := GetProcAddress(hHighlight, {02}'HighlightDrawItem@12');
+    HighlightDrawItem := GetProcAddress(hHighlight, {02}'HighlightDrawItem@16');
     HighlightRedraw   := GetProcAddress(hHighlight, {03}'HighlightRedraw@4');
     ChangeLanguage    := GetProcAddress(hHighlight, {04}'ChangeLanguage@8');
     ChangeTheme       := GetProcAddress(hHighlight, {05}'ChangeTheme@8');

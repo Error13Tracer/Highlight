@@ -26,6 +26,9 @@ object Form1: TForm1
     ExplicitHeight = 524
     object TabSheet1: TTabSheet
       Caption = 'Delphi'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 496
       object ListBox1: TListBox
         Left = 0
@@ -37,12 +40,15 @@ object Form1: TForm1
         PopupMenu = PopupMenu1
         TabOrder = 0
         OnDrawItem = ListBox1DrawItem
-        ExplicitHeight = 496
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'Asm'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ListBox2: TListBox
         Left = 0
         Top = 0
@@ -58,6 +64,10 @@ object Form1: TForm1
     object TabSheet3: TTabSheet
       Caption = 'Hex'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ListBox3: TListBox
         Left = 0
         Top = 0

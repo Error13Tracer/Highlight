@@ -105,7 +105,8 @@ type
   private
     BackUp              : TStringList;
     ThemeSettings       : TThemeSettings;
-    cThemeHLastId: Integer;
+    cThemeHLastId       : Integer;
+    CurrentLangId       : Integer;
     procedure SaveConfig();
     procedure General_LoadLang(Index: Integer);
     procedure Highlight_LoadLang(Index: Integer);
@@ -202,7 +203,7 @@ end;
 procedure TfHighlightSettings.cGeneralPreviewDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 begin
-  GeneralPreviewId.OnDrawItem(Index, Rect);
+  GeneralPreviewId.OnDrawItem(Index, Rect, BOOL(Random(2)));
 end;
 
 //-------------------------------------------------------------------------------------------
@@ -251,6 +252,8 @@ end;
 
 procedure TfHighlightSettings.FormShow(Sender: TObject);
 begin
+  CurrentLangId := 0;
+  
   BackUp.LoadFromFile(szConfigFile);
   cPages.ActivePage := cGeneral;
 
@@ -313,7 +316,7 @@ end;
 
 procedure TfHighlightSettings.SaveConfig();
 begin
-  case cHighlightLang.ItemIndex of
+  case CurrentLangId of
     0: SaveTheme(tlAsm,    cThemeHLastId, HighlightPreviewId.cHighlightTheme);
     1: SaveTheme(tlHex,    cThemeHLastId, HighlightPreviewId.cHighlightTheme);
     2: SaveTheme(tlDelphi, cThemeHLastId, HighlightPreviewId.cHighlightTheme);
@@ -353,7 +356,7 @@ const
   STR_CONFIRM_CAPTION = 'Confirm';
   STR_CONFIRM_TEXT    = 'Settings have been modified. Save changes?';
 begin
-  if fHighlightSettings.cApply.Enabled then
+  if (fHighlightSettings.cApply.Enabled)and(fHighlightSettings.CurrentLangId >= 0) then
   begin
     if fHighlightSettings.cAutosave.Checked then
     begin
@@ -406,13 +409,14 @@ procedure TfHighlightSettings.cHighlightLangClick(Sender: TObject);
 begin
   ConfirmDlg();
   Highlight_LoadLang(cHighlightLang.ItemIndex);
+  CurrentLangId := cHighlightLang.ItemIndex;
 end;
 
 procedure TfHighlightSettings.cHighlightPreviewDrawItem(
   Control: TWinControl; Index: Integer; Rect: TRect;
   State: TOwnerDrawState);
 begin
-  HighlightPreviewId.OnDrawItem(Index, Rect);
+  HighlightPreviewId.OnDrawItem(Index, Rect, BOOL(Random(2)));
 end;
 
 procedure TfHighlightSettings.cThemeHClick(Sender: TObject);
@@ -482,28 +486,33 @@ begin
             end;
           1 :
             begin
+              Lighten.Font.Assign(ThemeSettings.cHighlightPart[i].FontStyle);
+              Lighten.BgColor := ThemeSettings.cHighlightPart[i].BgColor;
+            end;
+          2 :
+            begin
               Comments.Font.Assign(ThemeSettings.cHighlightPart[i].FontStyle);
               Comments.BgColor := ThemeSettings.cHighlightPart[i].BgColor;
             end;
-          2 :
+          3 :
             begin
               Numbers.Font.Assign(ThemeSettings.cHighlightPart[i].FontStyle);
               Numbers.BgColor := ThemeSettings.cHighlightPart[i].BgColor;
             end;
-          3 :
+          4 :
             begin
               Strings.Font.Assign(ThemeSettings.cHighlightPart[i].FontStyle);
               Strings.BgColor := ThemeSettings.cHighlightPart[i].BgColor;
             end;
-          4 :
+          5 :
             begin
               Additional.Font.Assign(ThemeSettings.cHighlightPart[i].FontStyle);
               Additional.BgColor := ThemeSettings.cHighlightPart[i].BgColor;
             end;
           else
             begin
-              KeyWords[i-5].Font.Assign(ThemeSettings.cHighlightPart[i].FontStyle);
-              KeyWords[i-5].BgColor := ThemeSettings.cHighlightPart[i].BgColor;
+              KeyWords[i-6].Font.Assign(ThemeSettings.cHighlightPart[i].FontStyle);
+              KeyWords[i-6].BgColor := ThemeSettings.cHighlightPart[i].BgColor;
             end;
         end;
       end;
@@ -591,7 +600,7 @@ begin
     BevelInner := bvRaised;
     BevelOuter := bvSpace;
     OnMouseDown:= cFontStyleMouseDown;
-    Hint       := 'Left - Font; Right - BgColor';
+    Hint       := 'Left - Font; Left+Ctrl - Extnded Font Color; Right - BgColor';
   end;
   cColorDlg := TColorDialog.Create(Self);
   cFontDlg  := TFontDialog.Create(Self);
@@ -628,16 +637,38 @@ end;
 
 procedure THighlightPart.cFontStyleMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+
+  function CtrlDown(): Boolean;
+  var
+    State : TKeyboardState;
+  begin
+    GetKeyboardState(State);
+    Result := ((State[VK_CONTROL] and 128) <> 0);
+  end;
+
 begin
   case Button of
     mbLeft :
       begin
-        cFontDlg.Font := cFontPanel.Font;
-        if cFontDlg.Execute then
+        if not CtrlDown() then
         begin
-          cFontPanel.Font.Assign(cFontDlg.Font);
-          fHighlightSettings.UpdateCustomTheme(Self);
-          fHighlightSettings.cApply.Enabled := True;
+          cFontDlg.Font := cFontPanel.Font;
+          if cFontDlg.Execute then
+          begin
+            cFontPanel.Font.Assign(cFontDlg.Font);
+            fHighlightSettings.UpdateCustomTheme(Self);
+            fHighlightSettings.cApply.Enabled := True;
+          end;
+        end
+        else
+        begin
+          cColorDlg.Color := cFontPanel.Color;
+          if cColorDlg.Execute then
+          begin
+            cFontPanel.Font.Color := cColorDlg.Color;
+            fHighlightSettings.UpdateCustomTheme(Self);
+            fHighlightSettings.cApply.Enabled := True;
+          end;
         end;
       end;
     mbRight:
@@ -818,7 +849,7 @@ begin
   case fHighlightSettings.cHighlightLang.ItemIndex of
     0: //tlAsm
       begin
-        SetLength(cHighlightPart, 5 + Length(AsmLang.KeyWords));
+        SetLength(cHighlightPart, 6 + Length(AsmLang.KeyWords));
       end;
     1: //tlHex
       begin
@@ -826,12 +857,11 @@ begin
       end;
     2: //tlDelphi
       begin
-        SetLength(cHighlightPart, 5 + Length(DelphiLang.KeyWords));
+        SetLength(cHighlightPart, 6 + Length(DelphiLang.KeyWords));
       end;
     else
       Exit;
   end;
-  j := 0;
   cNameEdit.Text      := HighlightPreviewId.cHighlightTheme.Name;
   cBgColorPanel.Color := HighlightPreviewId.cHighlightTheme.BgColor;
   if fHighlightSettings.cHighlightLang.ItemIndex = 1{HEX} then
@@ -870,6 +900,7 @@ begin
   end
   else
   begin
+    j := 0;
     for i := Low(cHighlightPart) to High(cHighlightPart) do
     begin
       cHighlightPart[i] := THighlightPart.Create(cHighlightsBox);
@@ -883,23 +914,29 @@ begin
           end;
         1 :
           begin
+            cHighlightPart[i].Caption   := THEME_LIGHTEN;
+            cHighlightPart[i].FontStyle.Assign(HighlightPreviewId.cHighlightTheme.Lighten.Font);
+            cHighlightPart[i].BgColor   := HighlightPreviewId.cHighlightTheme.Lighten.BgColor;
+          end;
+        2 :
+          begin
             cHighlightPart[i].Caption   := THEME_COMMENTS;
             cHighlightPart[i].FontStyle.Assign(HighlightPreviewId.cHighlightTheme.Comments.Font);
             cHighlightPart[i].BgColor   := HighlightPreviewId.cHighlightTheme.Comments.BgColor;
           end;
-        2 :
+        3 :
           begin
             cHighlightPart[i].Caption   := THEME_NUMBERS;
             cHighlightPart[i].FontStyle.Assign(HighlightPreviewId.cHighlightTheme.Numbers.Font);
             cHighlightPart[i].BgColor   := HighlightPreviewId.cHighlightTheme.Numbers.BgColor;
           end;
-        3 :
+        4 :
           begin
             cHighlightPart[i].Caption   := THEME_STRINGS;
             cHighlightPart[i].FontStyle.Assign(HighlightPreviewId.cHighlightTheme.Strings.Font);
             cHighlightPart[i].BgColor   := HighlightPreviewId.cHighlightTheme.Strings.BgColor;
           end;
-        4 :
+        5 :
           begin
             cHighlightPart[i].Caption   := THEME_ADDITIONAL;
             cHighlightPart[i].FontStyle.Assign(HighlightPreviewId.cHighlightTheme.Additional.Font);
@@ -930,4 +967,6 @@ begin
   SetConfigString(CONFIG_NAME, CONFIG_AUTOSAVE, IntToStr(Integer(cAutosave.Checked)));
 end;
 
+initialization
+  Randomize;
 end.

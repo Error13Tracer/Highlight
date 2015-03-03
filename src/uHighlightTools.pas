@@ -31,6 +31,7 @@ type
   TTheme    = packed record
     Name      : string;
     BgColor   : TColor;
+    Lighten   : THighlight;
     Default   : THighlight;
     Numbers   : THighlight;
     Strings   : THighlight;
@@ -106,6 +107,7 @@ const
   THEME_KEYWORDS    = 'KeyWords';
   THEME_NAME        = 'ThemeName';
   THEME_BGCOLOR     = 'BgColor';
+  THEME_LIGHTEN     = 'Lighten';
   THEME_DEFAULT     = 'Default';
   THEME_COMMENTS    = 'Comments';
   THEME_NUMBERS     = 'Numbers';
@@ -120,7 +122,8 @@ const
   FS_UNDERLINE      = 4;
   FS_STRIKEOUT      = 8;
   DEF_HIGHLIGHT     = 'Fixedsys,000000,0,8,FFFFFF';
-  DEF_BGCOLOR       = $FFFFFF;  
+  DEF_LIGHTEN       = 'Fixedsys,BBBBBB,0,8,FFFFFF';
+  DEF_BGCOLOR       = $FFFFFF;
 
 implementation
 
@@ -263,6 +266,7 @@ var
   iThemeNumber  : integer;
   szBuffer      : string;
   szDefHighlight: string;
+  szDefLighten  : string;
   szThemeLang   : string;
   lpvLang       : PLanguage;
 begin
@@ -303,7 +307,9 @@ begin
   pvTheme^.Name := Trim(szBuffer);
   pvTheme^.BgColor := StrToIntDef('$' + GetConfigString(szThemeLang + IntToStr(iThemeNumber), THEME_BGCOLOR, IntToHex(DEF_BGCOLOR, 6)), DEF_BGCOLOR);
   szDefHighlight := GetConfigString(szThemeLang + IntToStr(iThemeNumber), THEME_DEFAULT, DEF_HIGHLIGHT);
+  szDefLighten   := GetConfigString(szThemeLang + IntToStr(iThemeNumber), THEME_LIGHTEN, DEF_LIGHTEN);
   LoadThemeHighlight(pvTheme^.Default, SplitString(szDefHighlight, [',']));
+  LoadThemeHighlight(pvTheme^.Lighten, SplitString(szDefLighten, [',']));
   if ThemeLang = tlHex then
   begin
     LoadThemeHighlight(pvTheme^.HEX.Addresses, SplitString(GetConfigString(szThemeLang + IntToStr(iThemeNumber), HEX_ADDRESSES, szDefHighlight), [',']));
@@ -369,6 +375,7 @@ begin
   Result := Result and SetConfigString(szThemeLang, THEME_NAME, Theme.Name);
   Result := Result and SetConfigString(szThemeLang, THEME_BGCOLOR, IntToHex(DWORD(Theme.BgColor), 6));
   Result := Result and SetConfigString(szThemeLang, THEME_DEFAULT, HighlightToString(Theme.Default));
+  Result := Result and SetConfigString(szThemeLang, THEME_LIGHTEN, HighlightToString(Theme.Lighten));
   if Language = tlHex then
   begin
     Result := Result and SetConfigString(szThemeLang, HEX_ADDRESSES, HighlightToString(Theme.HEX.Addresses));
@@ -405,6 +412,7 @@ begin
       Break;
     with Theme do begin
       Default.Font    := TFont.Create;
+      Lighten.Font    := TFont.Create;
       Comments.Font   := TFont.Create;
       Numbers.Font    := TFont.Create;
       Strings.Font    := TFont.Create;
@@ -417,6 +425,7 @@ begin
     SaveTheme(ThemeLang, i, Theme);
     with Theme do begin
       Default.Font.Free;
+      Lighten.Font.Free;
       Comments.Font.Free;
       Numbers.Font.Free;
       for j := Low(KeyWords) to High(KeyWords) do

@@ -63,19 +63,19 @@ var
 procedure TForm1.ListBox1DrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 begin
-  HighlightDrawItem(DelphiLbId, Index, Rect);
+  HighlightDrawItem(DelphiLbId, Index, Rect, BOOL(Random(2)));
 end;
 
 procedure TForm1.ListBox2DrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 begin
-  HighlightDrawItem(AsmLbId, Index, Rect);
+  HighlightDrawItem(AsmLbId, Index, Rect, BOOL(Random(2)));
 end;
 
 procedure TForm1.ListBox3DrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 begin
-  HighlightDrawItem(HexLbId, Index, Rect);
+  HighlightDrawItem(HexLbId, Index, Rect, BOOL(Random(2)));
 end;
 
 procedure TForm1.LoadFromStream(ListBox: TListBox; Language: string);
@@ -100,6 +100,7 @@ begin
     MessageBoxA(0, PAnsiChar(HighlightDll + ' not found'), 'Error', MB_ICONERROR);
     ExitProcess(0);
   end;
+  Randomize;
   ListBox1.Style := lbOwnerDrawFixed;
   ListBox2.Style := lbOwnerDrawFixed;
   ListBox3.Style := lbOwnerDrawFixed;

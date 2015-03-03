@@ -1,7 +1,7 @@
 //////////////////////////
 //Highlight SDK         //
-//Version: 1.1.0        //
-//Date   : 22.10.2013   //
+//Version: 1.2.0        //
+//Date   : 03.03.2015   //
 //Author : Error13Tracer//
 //////////////////////////
 
@@ -25,10 +25,11 @@ typedef  DWORD (__stdcall * PCreateHighlight)  (HWND, DWORD);
 //Возврат - ID контрола
 
 //Отрисовка в событии OnDrawItem
-typedef  void  (__stdcall * PHighlightDrawItem)(DWORD, LongInt, TRect);
+typedef  void  (__stdcall * PHighlightDrawItem)(DWORD, LongInt, TRect, BOOL);
 //ID контрола
 //Index
 //Rect
+//Lighten (true - осветление, false - рисовать согласно теме)
 
 //Перерисовка контрола
 typedef  void  (__stdcall * PHighlightRedraw)  (DWORD);
@@ -96,7 +97,7 @@ static bool InitHighlight(){
   }
   if (hHighlight != NULL) {
     CreateHighlight   = (PCreateHighlight)  GetProcAddress(hHighlight, /*0x01*/"CreateHighlight@8");
-    HighlightDrawItem = (PHighlightDrawItem)GetProcAddress(hHighlight, /*0x02*/"HighlightDrawItem@12");
+    HighlightDrawItem = (PHighlightDrawItem)GetProcAddress(hHighlight, /*0x02*/"HighlightDrawItem@16");
     HighlightRedraw   = (PHighlightRedraw)  GetProcAddress(hHighlight, /*0x03*/"HighlightRedraw@4");
     ChangeLanguage    = (PChangeLanguage)   GetProcAddress(hHighlight, /*0x04*/"ChangeLanguage@8");
     ChangeTheme       = (PChangeTheme)      GetProcAddress(hHighlight, /*0x05*/"ChangeTheme@8");
@@ -116,7 +117,7 @@ static bool InitHighlight(){
 
 static void FreeHighlight(){
   if (hHighlight != 0) {
-  FreeLibrary(hHighlight);
+    FreeLibrary(hHighlight);
   }
 }
 

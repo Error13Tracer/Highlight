@@ -42,16 +42,17 @@ begin
 end;
 
 //Обработчик события OnDrawItem для подсветки синтаксиса
-procedure HighlightDrawItem(ID   : DWORD;
-                            Index: LongInt;
-                            Rect : TRect); stdcall; export;{02}
+procedure HighlightDrawItem(ID     : DWORD;
+                            Index  : LongInt;
+                            Rect   : TRect;
+                            Lighten: BOOL); stdcall; export;{02}
 var
   i : integer;
 begin
   for i := Low(aHighlight) to High(aHighlight) do
     if aHighlight[i].ID = ID then
     begin
-      aHighlight[i].OnDrawItem(Index, Rect);
+      aHighlight[i].OnDrawItem(Index, Rect, Lighten);
       Break;
     end;
 end;
@@ -197,7 +198,7 @@ end;
 
 exports
   CreateHighlight   index $01 name 'CreateHighlight@8',
-  HighlightDrawItem index $02 name 'HighlightDrawItem@12',
+  HighlightDrawItem index $02 name 'HighlightDrawItem@16',
   HighlightRedraw   index $03 name 'HighlightRedraw@4',
   ChangeLanguage    index $04 name 'ChangeLanguage@8',
   ChangeTheme       index $05 name 'ChangeTheme@8',

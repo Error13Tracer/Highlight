@@ -18,8 +18,8 @@ object Form1: TForm1
   object PageControl1: TPageControl
     Left = 0
     Top = 0
-    Width = 684
-    Height = 483
+    Width = 676
+    Height = 475
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
@@ -28,8 +28,8 @@ object Form1: TForm1
       object ListBox1: TListBox
         Left = 0
         Top = 0
-        Width = 676
-        Height = 455
+        Width = 668
+        Height = 447
         Align = alClient
         ItemHeight = 13
         PopupMenu = PopupMenu1
@@ -43,8 +43,8 @@ object Form1: TForm1
       object ListBox2: TListBox
         Left = 0
         Top = 0
-        Width = 1072
-        Height = 504
+        Width = 668
+        Height = 447
         Align = alClient
         ItemHeight = 13
         PopupMenu = PopupMenu2
@@ -58,8 +58,8 @@ object Form1: TForm1
       object ListBox3: TListBox
         Left = 0
         Top = 0
-        Width = 1072
-        Height = 504
+        Width = 668
+        Height = 447
         Align = alClient
         ItemHeight = 13
         PopupMenu = PopupMenu3
@@ -70,8 +70,8 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 0
-    Top = 483
-    Width = 684
+    Top = 475
+    Width = 676
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
